@@ -100,6 +100,15 @@ export default async function AccueilPage() {
             Maladie, vacances, congé parental — soumettez une demande.
           </p>
         </Link>
+        <Link
+          href="/documents"
+          className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-300"
+        >
+          <h2 className="font-medium text-slate-900">Documents</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Politiques, formulaires et procédures de la résidence.
+          </p>
+        </Link>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ export default async function DashboardLayout({
     { href: "/menu", label: "Menu du jour" },
     { href: "/plan-travail", label: "Plan de travail" },
     { href: "/conges", label: "Demandes de congé" },
+    { href: "/documents", label: "Documents" },
     { href: "/profil", label: "Mon profil" },
   ];
 

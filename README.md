@@ -38,11 +38,12 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   calqué sur le formulaire papier de la résidence. L'employé soumet
   (et peut annuler tant que c'est en attente), la direction accepte
   ou refuse
+- ✅ Documents/procédures : bibliothèque de fichiers (politiques,
+  formulaires) téléversés par un administrateur, consultables par tous
 - ⏳ Disponibilités + horaire — délibérément laissé de côté pour l'instant
   (une seule personne fait l'horaire chaque semaine)
-- ⏳ Documents/procédures — à venir
-- ⏳ Feuille de temps (heures créditées/débitées, entrée/sortie) — à
-  discuter, gros morceau distinct des demandes de congé
+- ⏳ Feuille de temps (heures créditées/débitées, entrée/sortie) — mis
+  de côté pour l'instant, gros morceau distinct des demandes de congé
 
 La résidence peut être divisée en une ou plusieurs unités (configurable
 par un administrateur dans **Menu du jour > Gérer les unités**) — chaque
@@ -65,7 +66,9 @@ résident peut être rattaché à une unité.
    `0008_notifications.sql` ajoute les abonnements aux rappels,
    `0009_rappels_residents.sql` ajoute les rappels de rendez-vous résidents,
    `0010_babillard.sql` ajoute les annonces,
-   `0011_demandes_conge.sql` ajoute les demandes de congé).
+   `0011_demandes_conge.sql` ajoute les demandes de congé,
+   `0012_documents.sql` ajoute la bibliothèque de documents (et le bucket
+   de stockage associé)).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))
