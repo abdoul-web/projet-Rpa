@@ -13,7 +13,8 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   (admin / employé), gestion des employés par un administrateur
 - ✅ Échanges de quarts : ajout de ses quarts, mise en échange, prise d'un
   quart offert par un collègue, approbation finale par un administrateur
-- ⏳ Rapports interservices — à venir
+- ✅ Rapports interservices : notes par résident pour chaque quart
+  (jour/soir/nuit), avec suivi structuré des soins d'hygiène
 - ⏳ Disponibilités + horaire — à venir
 - ⏳ Menu de cuisine + allergies — à venir
 - ⏳ Plan de travail avec rappels — à venir
@@ -26,7 +27,8 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
    nouveau projet.
 2. Dans **SQL Editor**, exécutez dans l'ordre les fichiers du dossier
    `supabase/migrations/` (`0001_init.sql` crée `profiles` et les rôles,
-   `0002_echanges_quarts.sql` ajoute les quarts et les échanges).
+   `0002_echanges_quarts.sql` ajoute les quarts et les échanges,
+   `0003_rapports_interservices.sql` ajoute les résidents et leurs notes).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))
