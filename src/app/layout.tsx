@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NOM_RESIDENCE } from "@/lib/residence";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Espace employés — Résidence",
-  description: "Application interne de la résidence",
+  title: `Espace employés — ${NOM_RESIDENCE}`,
+  description: `Application interne de ${NOM_RESIDENCE}`,
 };
 
 export default function RootLayout({

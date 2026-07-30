@@ -1,3 +1,4 @@
+import { NOM_RESIDENCE } from "@/lib/residence";
 import { login } from "./actions";
 
 export default async function LoginPage({
@@ -12,10 +13,10 @@ export default async function LoginPage({
       <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
         <span className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-orange-500" />
         <h1 className="mb-1 text-xl font-semibold text-slate-900">
-          Espace employés
+          {NOM_RESIDENCE}
         </h1>
         <p className="mb-6 text-sm text-slate-500">
-          Connectez-vous avec les identifiants fournis par votre résidence.
+          Espace employés — connectez-vous avec vos identifiants.
         </p>
 
         {error && (

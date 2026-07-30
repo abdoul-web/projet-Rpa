@@ -1,3 +1,4 @@
+import { NOM_RESIDENCE } from "@/lib/residence";
 import { definirMotDePasse } from "./actions";
 
 export default async function DefinirMotDePassePage({
@@ -15,7 +16,8 @@ export default async function DefinirMotDePassePage({
           Bienvenue !
         </h1>
         <p className="mb-6 text-sm text-slate-500">
-          Choisissez votre mot de passe pour accéder à l&apos;espace employés.
+          Choisissez votre mot de passe pour accéder à l&apos;espace employés de{" "}
+          {NOM_RESIDENCE}.
         </p>
 
         {error && (

@@ -1,4 +1,4 @@
-# Projet RPA — Application pour résidence privée
+# Résidence au Soleil Levant — Application interne
 
 Application interne pour la résidence : espace employés, rapports
 interservices, échanges de quarts, et plus à venir.

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/profile";
+import { NOM_RESIDENCE } from "@/lib/residence";
 import { logout } from "@/app/login/actions";
 import { Nav } from "./Nav";
 
@@ -36,7 +37,7 @@ export default async function DashboardLayout({
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
           <span className="flex items-center gap-2 text-sm font-medium tracking-wide text-slate-900">
             <span className="h-2 w-2 rounded-full bg-gradient-to-br from-amber-300 to-orange-500" />
-            ESPACE EMPLOYÉS
+            {NOM_RESIDENCE.toUpperCase()}
           </span>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm text-slate-400 sm:inline">
