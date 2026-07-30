@@ -34,9 +34,15 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   à l'heure prévue
 - ✅ Babillard : annonces de la direction visibles par tous les employés,
   avec option "épingler"
+- ✅ Demandes de congé : maladie, parental, vacances, anniversaire —
+  calqué sur le formulaire papier de la résidence. L'employé soumet
+  (et peut annuler tant que c'est en attente), la direction accepte
+  ou refuse
 - ⏳ Disponibilités + horaire — délibérément laissé de côté pour l'instant
   (une seule personne fait l'horaire chaque semaine)
-- ⏳ Documents/procédures, demandes de congé — à venir
+- ⏳ Documents/procédures — à venir
+- ⏳ Feuille de temps (heures créditées/débitées, entrée/sortie) — à
+  discuter, gros morceau distinct des demandes de congé
 
 La résidence peut être divisée en une ou plusieurs unités (configurable
 par un administrateur dans **Menu du jour > Gérer les unités**) — chaque
@@ -58,7 +64,8 @@ résident peut être rattaché à une unité.
    `0007_plan_travail_jour.sql` ajoute les plans de jour (6h-14h et 6h30-15h),
    `0008_notifications.sql` ajoute les abonnements aux rappels,
    `0009_rappels_residents.sql` ajoute les rappels de rendez-vous résidents,
-   `0010_babillard.sql` ajoute les annonces).
+   `0010_babillard.sql` ajoute les annonces,
+   `0011_demandes_conge.sql` ajoute les demandes de congé).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))

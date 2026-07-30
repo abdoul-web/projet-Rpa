@@ -91,6 +91,15 @@ export default async function AccueilPage() {
             Les tâches de votre quart, à cocher au fur et à mesure.
           </p>
         </Link>
+        <Link
+          href="/conges"
+          className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-300"
+        >
+          <h2 className="font-medium text-slate-900">Demandes de congé</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Maladie, vacances, congé parental — soumettez une demande.
+          </p>
+        </Link>
       </div>
     </div>
   );
