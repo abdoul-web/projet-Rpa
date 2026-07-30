@@ -40,6 +40,8 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   ou refuse
 - ✅ Documents/procédures : bibliothèque de fichiers (politiques,
   formulaires) téléversés par un administrateur, consultables par tous
+- ✅ Clavardage : discussion d'équipe en direct (messages instantanés,
+  sans rafraîchir la page) — remplace le groupe Messenger
 - ⏳ Disponibilités + horaire — délibérément laissé de côté pour l'instant
   (une seule personne fait l'horaire chaque semaine)
 - ⏳ Feuille de temps (heures créditées/débitées, entrée/sortie) — mis
@@ -68,7 +70,13 @@ résident peut être rattaché à une unité.
    `0010_babillard.sql` ajoute les annonces,
    `0011_demandes_conge.sql` ajoute les demandes de congé,
    `0012_documents.sql` ajoute la bibliothèque de documents (et le bucket
-   de stockage associé)).
+   de stockage associé),
+   `0013_clavardage.sql` ajoute le clavardage d'équipe en temps réel).
+
+   Si le clavardage ne se met pas à jour en direct après avoir exécuté
+   `0013_clavardage.sql`, vérifiez dans **Database > Replication** que la
+   table `messages_chat` est bien cochée dans la publication
+   `supabase_realtime` (normalement automatique avec le script).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))

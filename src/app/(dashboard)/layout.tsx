@@ -18,6 +18,7 @@ export default async function DashboardLayout({
   const links = [
     { href: "/", label: "Accueil" },
     { href: "/babillard", label: "Babillard" },
+    { href: "/clavardage", label: "Clavardage" },
     { href: "/rapports", label: "Rapports interservices" },
     { href: "/echanges", label: "Échanges de quarts" },
     { href: "/menu", label: "Menu du jour" },

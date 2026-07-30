@@ -9,6 +9,7 @@ import {
   FileText,
   Home,
   Megaphone,
+  MessageCircle,
   Repeat,
   User,
   UtensilsCrossed,
@@ -18,6 +19,7 @@ import {
 const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
   "/": Home,
   "/babillard": Megaphone,
+  "/clavardage": MessageCircle,
   "/rapports": ClipboardList,
   "/echanges": Repeat,
   "/menu": UtensilsCrossed,

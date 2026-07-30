@@ -4,6 +4,7 @@ import {
   ClipboardList,
   FileText,
   Megaphone,
+  MessageCircle,
   Repeat,
   UtensilsCrossed,
   type LucideIcon,
@@ -26,6 +27,12 @@ const CARTES: Carte[] = [
     label: "Babillard",
     description: "Annonces de la direction pour toute l'équipe.",
     Icon: Megaphone,
+  },
+  {
+    href: "/clavardage",
+    label: "Clavardage",
+    description: "Discussion d'équipe en direct.",
+    Icon: MessageCircle,
   },
   {
     href: "/rapports",
