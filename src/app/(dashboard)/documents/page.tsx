@@ -1,3 +1,4 @@
+import { FileText } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import type { DocumentFichier } from "@/lib/documents";
@@ -26,14 +27,17 @@ export default async function DocumentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Documents &amp; procédures</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <FileText className="h-6 w-6 text-accent/70" />
+          Documents &amp; procédures
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Politiques, formulaires et procédures de la résidence.
         </p>
       </div>
 
       {profile.role === "admin" && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <section className="rounded-xl border border-slate-100 bg-white p-5">
           <h2 className="font-medium text-slate-900">Ajouter un document</h2>
           <form action={televerserDocument} className="mt-3 grid gap-3 sm:grid-cols-2">
             <input
@@ -67,7 +71,7 @@ export default async function DocumentsPage() {
           return (
             <li
               key={document.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-100 bg-white p-4 text-sm"
             >
               <div>
                 <a

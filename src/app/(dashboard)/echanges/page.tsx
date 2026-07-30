@@ -1,3 +1,4 @@
+import { Repeat } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import type { EchangeQuart, Quart } from "@/lib/echanges";
@@ -77,7 +78,10 @@ export default async function EchangesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Échanges de quarts</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <Repeat className="h-6 w-6 text-accent/70" />
+          Échanges de quarts
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Ajoutez vos quarts, proposez-les en échange, et prenez un quart offert
           par un collègue.
@@ -126,7 +130,7 @@ export default async function EchangesPage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Mes quarts à venir</h2>
 
         <form action={ajouterQuart} className="mt-4 grid gap-3 sm:grid-cols-4">
@@ -202,7 +206,7 @@ export default async function EchangesPage() {
         </ul>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Quarts disponibles à l&apos;échange</h2>
         <ul className="mt-3 divide-y divide-slate-100">
           {(disponibles as EchangeQuart[] | null)?.map((echange) => (
@@ -232,7 +236,7 @@ export default async function EchangesPage() {
         </ul>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Mes demandes</h2>
         <ul className="mt-3 divide-y divide-slate-100">
           {(mesDemandes as EchangeQuart[] | null)?.map((echange) => (

@@ -1,3 +1,4 @@
+import { CalendarDays } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -39,7 +40,10 @@ export default async function CongesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Demandes de congé</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <CalendarDays className="h-6 w-6 text-accent/70" />
+          Demandes de congé
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Maladie, congé parental, vacances, anniversaire — soumettez votre
           demande, la direction l&apos;approuve ou la refuse.
@@ -87,7 +91,7 @@ export default async function CongesPage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Nouvelle demande</h2>
         <form action={soumettreDemande} className="mt-3 grid gap-3 sm:grid-cols-4">
           <select
@@ -128,7 +132,7 @@ export default async function CongesPage() {
         </form>
       </section>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Mes demandes</h2>
         <ul className="mt-3 divide-y divide-slate-100">
           {mesDemandes.map((demande) => (

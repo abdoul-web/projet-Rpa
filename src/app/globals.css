@@ -35,6 +35,22 @@ button:active {
   transform: scale(0.97);
 }
 
+input,
+select,
+textarea {
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(217 119 6 / 15%);
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-foreground);

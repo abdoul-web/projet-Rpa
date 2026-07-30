@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ListChecks } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -94,7 +95,10 @@ export default async function PlanTravailPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Plan de travail</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <ListChecks className="h-6 w-6 text-accent/70" />
+          Plan de travail
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Les tâches à faire pendant votre quart, à cocher au fur et à mesure.
         </p>
@@ -103,16 +107,16 @@ export default async function PlanTravailPage({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-        <div className="flex flex-wrap gap-1">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-white p-4">
+        <div className="flex flex-wrap gap-4">
           {listePlans.map((plan) => (
             <Link
               key={plan.id}
               href={`/plan-travail?planId=${plan.id}&date=${date}`}
-              className={`rounded-md px-3 py-1.5 text-sm ${
+              className={`border-b-2 pb-0.5 text-sm ${
                 planSelectionne?.id === plan.id
-                  ? "bg-slate-900 text-white"
-                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
+                  ? "border-accent font-medium text-slate-900"
+                  : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
               {plan.nom}
@@ -188,14 +192,14 @@ export default async function PlanTravailPage({
                     enRetard
                       ? "border-red-200 bg-red-50"
                       : estActuel
-                        ? "border-slate-900 bg-white"
-                        : "border-slate-200 bg-white"
+                        ? "border-accent bg-white"
+                        : "border-slate-100 bg-white"
                   }`}
                 >
                   <h3 className="font-medium text-slate-900">
                     {formatHeure(heure)}
                     {estActuel && (
-                      <span className="ml-2 rounded-full bg-slate-900 px-2 py-0.5 text-xs text-white">
+                      <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-xs text-white">
                         En cours
                       </span>
                     )}
@@ -230,7 +234,7 @@ export default async function PlanTravailPage({
                                 aria-label={completee ? "Décocher" : "Cocher"}
                                 className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs ${
                                   completee
-                                    ? "border-slate-900 bg-slate-900 text-white"
+                                    ? "border-accent bg-accent text-white"
                                     : "border-slate-300 bg-white"
                                 }`}
                               >
@@ -238,7 +242,7 @@ export default async function PlanTravailPage({
                               </button>
                             </form>
                           ) : (
-                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-slate-900 bg-slate-900 text-xs text-white">
+                            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border border-accent bg-accent text-xs text-white">
                               ✓
                             </span>
                           )}
@@ -273,7 +277,7 @@ export default async function PlanTravailPage({
       )}
 
       {profile.role === "admin" && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <section className="rounded-xl border border-slate-100 bg-white p-5">
           <h2 className="font-medium text-slate-900">Gérer les plans de travail</h2>
 
           <form action={creerPlan} className="mt-3 grid gap-3 sm:grid-cols-2">

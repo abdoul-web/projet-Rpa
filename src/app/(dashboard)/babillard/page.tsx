@@ -1,3 +1,4 @@
+import { Megaphone } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import type { Annonce } from "@/lib/babillard";
@@ -28,14 +29,17 @@ export default async function BabillardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Babillard</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <Megaphone className="h-6 w-6 text-accent/70" />
+          Babillard
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Annonces de la direction pour toute l&apos;équipe.
         </p>
       </div>
 
       {profile.role === "admin" && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <section className="rounded-xl border border-slate-100 bg-white p-5">
           <h2 className="font-medium text-slate-900">Publier une annonce</h2>
           <form action={publierAnnonce} className="mt-3 space-y-3">
             <input
@@ -66,7 +70,7 @@ export default async function BabillardPage() {
           <section
             key={annonce.id}
             className={`rounded-xl border p-5 ${
-              annonce.epingle ? "border-amber-300 bg-amber-50" : "border-slate-200 bg-white"
+              annonce.epingle ? "border-amber-300 bg-amber-50" : "border-slate-100 bg-white"
             }`}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">

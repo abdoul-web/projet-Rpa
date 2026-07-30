@@ -1,3 +1,4 @@
+import { UtensilsCrossed } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { LIBELLES_REPAS, ORDRE_REPAS, type MenuJour } from "@/lib/menu";
@@ -42,7 +43,10 @@ export default async function MenuPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Menu du jour</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <UtensilsCrossed className="h-6 w-6 text-accent/70" />
+          Menu du jour
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Le menu de chaque unité, entré par la cuisine.
         </p>
@@ -66,7 +70,7 @@ export default async function MenuPage({
           return (
             <section
               key={unite.id}
-              className="rounded-xl border border-slate-200 bg-white p-5"
+              className="rounded-xl border border-slate-100 bg-white p-5"
             >
               <h2 className="font-medium text-slate-900">{unite.nom}</h2>
 
@@ -115,7 +119,7 @@ export default async function MenuPage({
       </div>
 
       {profile.role === "admin" && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <section className="rounded-xl border border-slate-100 bg-white p-5">
           <h2 className="font-medium text-slate-900">Gérer les unités</h2>
           <form action={ajouterUnite} className="mt-3 flex gap-3">
             <input

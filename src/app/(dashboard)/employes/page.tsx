@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Users } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { changerRole, changerStatut, inviterEmploye } from "./actions";
@@ -18,12 +19,15 @@ export default async function EmployesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900">Employés</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+        <Users className="h-6 w-6 text-accent/70" />
+        Employés
+      </h1>
       <p className="mt-1 text-sm text-slate-500">
         Invitez de nouveaux employés et gérez les rôles et statuts.
       </p>
 
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+      <section className="mt-6 rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Inviter un employé</h2>
         <form action={inviterEmploye} className="mt-4 grid gap-3 sm:grid-cols-2">
           <input
@@ -72,9 +76,9 @@ export default async function EmployesPage() {
         </form>
       </section>
 
-      <section className="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <section className="mt-6 overflow-x-auto rounded-xl border border-slate-100 bg-white">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-slate-200 text-slate-500">
+          <thead className="border-b border-slate-100 text-slate-500">
             <tr>
               <th className="px-4 py-3 font-medium">Nom</th>
               <th className="px-4 py-3 font-medium">Poste</th>

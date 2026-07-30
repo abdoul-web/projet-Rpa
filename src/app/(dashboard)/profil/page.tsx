@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { mettreAJourProfil } from "./actions";
 
@@ -13,7 +14,10 @@ export default async function ProfilPage() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-2xl font-semibold text-slate-900">Mon profil</h1>
+      <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+        <User className="h-6 w-6 text-accent/70" />
+        Mon profil
+      </h1>
       <p className="mt-1 text-sm text-slate-500">
         Les informations d&apos;emploi (nom, poste, service, rôle) sont
         gérées par l&apos;administration. Vous pouvez mettre à jour votre

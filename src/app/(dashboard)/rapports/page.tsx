@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClipboardList } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -90,7 +91,8 @@ export default async function RapportsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="flex items-center gap-2 text-2xl font-light tracking-tight text-slate-900">
+          <ClipboardList className="h-6 w-6 text-accent/70" />
           Rapports interservices
         </h1>
         <p className="mt-1 text-sm text-slate-500">
@@ -99,7 +101,7 @@ export default async function RapportsPage({
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-100 bg-white p-4">
         <form method="get" className="flex items-center gap-2">
           <input type="hidden" name="quart" value={quart} />
           <input
@@ -113,15 +115,15 @@ export default async function RapportsPage({
           </button>
         </form>
 
-        <div className="flex gap-1">
+        <div className="flex gap-4">
           {ORDRE_PERIODES.map((p) => (
             <Link
               key={p}
               href={`/rapports?date=${date}&quart=${p}`}
-              className={`rounded-md px-3 py-1.5 text-sm ${
+              className={`border-b-2 pb-0.5 text-sm ${
                 p === quart
-                  ? "bg-slate-900 text-white"
-                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
+                  ? "border-accent font-medium text-slate-900"
+                  : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
               {LIBELLES_PERIODE[p]}
@@ -131,14 +133,14 @@ export default async function RapportsPage({
 
         <Link
           href={`/rapports?date=${precedent.date}&quart=${precedent.quart}`}
-          className="ml-auto text-sm text-slate-500 hover:text-slate-900"
+          className="ml-auto text-sm text-slate-500 hover:text-accent"
         >
           ← Voir le quart précédent ({LIBELLES_PERIODE[precedent.quart]} du{" "}
           {precedent.date})
         </Link>
       </div>
 
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
+      <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h2 className="font-medium text-slate-900">Rappels &amp; rendez-vous à venir</h2>
         <p className="mt-1 text-sm text-slate-500">
           Ex: une famille demande que son proche soit prêt à une heure précise
@@ -222,7 +224,7 @@ export default async function RapportsPage({
           return (
             <section
               key={resident.id}
-              className="rounded-xl border border-slate-200 bg-white p-5"
+              className="rounded-xl border border-slate-100 bg-white p-5"
             >
               <h2 className="font-medium text-slate-900">
                 {resident.prenom} {resident.nom}
@@ -301,7 +303,7 @@ export default async function RapportsPage({
       </div>
 
       {profile.role === "admin" && (
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <section className="rounded-xl border border-slate-100 bg-white p-5">
           <h2 className="font-medium text-slate-900">Gérer les résidents</h2>
           <form action={ajouterResident} className="mt-3 grid gap-3 sm:grid-cols-3">
             <input
