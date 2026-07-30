@@ -9,10 +9,17 @@ import {
   periodeSelonHeure,
   type NoteResident,
   type Periode,
+  type RappelResident,
   type Resident,
   type Unite,
 } from "@/lib/rapports";
-import { ajouterNote, ajouterResident, changerStatutResident } from "./actions";
+import {
+  ajouterNote,
+  ajouterRappel,
+  ajouterResident,
+  changerStatutResident,
+  completerRappel,
+} from "./actions";
 
 function estPeriode(valeur: string | undefined): valeur is Periode {
   return valeur === "jour" || valeur === "soir" || valeur === "nuit";
@@ -23,6 +30,10 @@ function formatHeure(iso: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatHeureTexte(heure: string) {
+  return heure.slice(0, 5);
 }
 
 export default async function RapportsPage({
@@ -40,20 +51,30 @@ export default async function RapportsPage({
 
   const supabase = await createClient();
 
-  const [{ data: residents }, { data: notes }, { data: unites }] = await Promise.all([
-    supabase
-      .from("residents")
-      .select("*")
-      .eq("statut", "actif")
-      .order("chambre", { ascending: true }),
-    supabase
-      .from("notes_residents")
-      .select("*, auteur:profiles!notes_residents_auteur_id_fkey(id,prenom,nom)")
-      .eq("date", date)
-      .eq("quart", quart)
-      .order("created_at", { ascending: true }),
-    supabase.from("unites").select("*").eq("statut", "actif").order("nom"),
-  ]);
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+
+  const [{ data: residents }, { data: notes }, { data: unites }, { data: rappels }] =
+    await Promise.all([
+      supabase
+        .from("residents")
+        .select("*")
+        .eq("statut", "actif")
+        .order("chambre", { ascending: true }),
+      supabase
+        .from("notes_residents")
+        .select("*, auteur:profiles!notes_residents_auteur_id_fkey(id,prenom,nom)")
+        .eq("date", date)
+        .eq("quart", quart)
+        .order("created_at", { ascending: true }),
+      supabase.from("unites").select("*").eq("statut", "actif").order("nom"),
+      supabase
+        .from("rappels_residents")
+        .select("*, resident:residents!rappels_residents_resident_id_fkey(id,prenom,nom,chambre)")
+        .eq("complete", false)
+        .gte("date", aujourdhui)
+        .order("date", { ascending: true })
+        .order("heure", { ascending: true }),
+    ]);
 
   const unitesParId = new Map(
     ((unites ?? []) as Unite[]).map((unite) => [unite.id, unite.nom]),
@@ -116,6 +137,84 @@ export default async function RapportsPage({
           {precedent.date})
         </Link>
       </div>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="font-medium text-slate-900">Rappels &amp; rendez-vous à venir</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Ex: une famille demande que son proche soit prêt à une heure précise
+          (rendez-vous, sortie). Une notification est envoyée aux employés
+          abonnés aux rappels au moment prévu.
+        </p>
+
+        <ul className="mt-3 space-y-2">
+          {(rappels as RappelResident[] | null)?.map((rappel) => (
+            <li
+              key={rappel.id}
+              className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-amber-50 p-3 text-sm"
+            >
+              <span>
+                <strong>
+                  {formatHeureTexte(rappel.heure)} — {rappel.resident.prenom}{" "}
+                  {rappel.resident.nom}
+                </strong>
+                {rappel.resident.chambre ? ` (Chambre ${rappel.resident.chambre})` : ""}
+                {rappel.date !== aujourdhui ? ` · ${rappel.date}` : ""}
+                <br />
+                {rappel.description}
+              </span>
+              <form action={completerRappel}>
+                <input type="hidden" name="rappelId" value={rappel.id} />
+                <button className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100">
+                  Fait ✓
+                </button>
+              </form>
+            </li>
+          ))}
+          {!rappels?.length && (
+            <li className="text-sm text-slate-400">Aucun rappel à venir.</li>
+          )}
+        </ul>
+
+        <form action={ajouterRappel} className="mt-4 grid gap-3 sm:grid-cols-4">
+          <select
+            name="resident_id"
+            required
+            defaultValue=""
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="" disabled>
+              Résident
+            </option>
+            {(residents as Resident[] | null)?.map((resident) => (
+              <option key={resident.id} value={resident.id}>
+                {resident.prenom} {resident.nom}
+              </option>
+            ))}
+          </select>
+          <input
+            name="date"
+            type="date"
+            required
+            defaultValue={aujourdhui}
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          />
+          <input
+            name="heure"
+            type="time"
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          />
+          <input
+            name="description"
+            placeholder="Ex: Prêt pour rendez-vous à l'hôpital"
+            required
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          />
+          <button className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 sm:col-span-4">
+            Ajouter le rappel
+          </button>
+        </form>
+      </section>
 
       <div className="space-y-4">
         {(residents as Resident[] | null)?.map((resident) => {

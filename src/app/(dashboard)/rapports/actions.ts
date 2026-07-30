@@ -37,6 +37,52 @@ export async function ajouterNote(formData: FormData) {
   revalidatePath("/rapports");
 }
 
+export async function ajouterRappel(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Non authentifié.");
+
+  const resident_id = String(formData.get("resident_id") ?? "");
+  const date = String(formData.get("date") ?? "");
+  const heure = String(formData.get("heure") ?? "");
+  const description = String(formData.get("description") ?? "").trim();
+
+  if (!resident_id || !date || !heure || !description) {
+    throw new Error("Résident, date, heure et description sont requis.");
+  }
+
+  const { error } = await supabase.from("rappels_residents").insert({
+    resident_id,
+    date,
+    heure,
+    description,
+    cree_par_id: user.id,
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/rapports");
+}
+
+export async function completerRappel(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Non authentifié.");
+
+  const rappelId = String(formData.get("rappelId") ?? "");
+
+  const { error } = await supabase
+    .from("rappels_residents")
+    .update({ complete: true, complete_par_id: user.id, complete_a: new Date().toISOString() })
+    .eq("id", rappelId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/rapports");
+}
+
 export async function ajouterResident(formData: FormData) {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "admin") {

@@ -24,10 +24,19 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   14h-22h, soir 15h30-00h) ; les autres ailes se créent depuis l'écran
   d'administration
 - ✅ Notifications programmées : rappel push envoyé à l'heure de chaque
-  tâche du plan de travail (aux employés qui s'y sont abonnés), tant
-  qu'elle n'est pas déjà cochée. Fonctionne sur téléphone (Android
-  directement, iPhone via "Ajouter à l'écran d'accueil")
-- ⏳ Disponibilités + horaire — à venir
+  tâche du plan de travail (aux employés qui s'y sont abonnés) et de
+  chaque rappel résident, tant qu'ils ne sont pas déjà cochés/complétés.
+  Fonctionne sur téléphone (Android directement, iPhone via "Ajouter à
+  l'écran d'accueil")
+- ✅ Rappels &amp; rendez-vous résidents : sur la page Rapports
+  interservices, noter qu'un résident doit être prêt à une heure
+  précise (rendez-vous, sortie familiale...) — notification envoyée
+  à l'heure prévue
+- ✅ Babillard : annonces de la direction visibles par tous les employés,
+  avec option "épingler"
+- ⏳ Disponibilités + horaire — délibérément laissé de côté pour l'instant
+  (une seule personne fait l'horaire chaque semaine)
+- ⏳ Documents/procédures, demandes de congé — à venir
 
 La résidence peut être divisée en une ou plusieurs unités (configurable
 par un administrateur dans **Menu du jour > Gérer les unités**) — chaque
@@ -47,7 +56,9 @@ résident peut être rattaché à une unité.
    `0005_plan_travail.sql` ajoute le plan de travail (avec un exemple réel),
    `0006_plan_travail_soir.sql` ajoute les plans de soir (14h-22h et 15h30-00h),
    `0007_plan_travail_jour.sql` ajoute les plans de jour (6h-14h et 6h30-15h),
-   `0008_notifications.sql` ajoute les abonnements aux rappels).
+   `0008_notifications.sql` ajoute les abonnements aux rappels,
+   `0009_rappels_residents.sql` ajoute les rappels de rendez-vous résidents,
+   `0010_babillard.sql` ajoute les annonces).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))

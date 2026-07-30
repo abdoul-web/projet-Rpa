@@ -44,6 +44,18 @@ export type NoteResident = {
   auteur: { id: string; prenom: string; nom: string };
 };
 
+export type RappelResident = {
+  id: string;
+  resident_id: string;
+  date: string;
+  heure: string;
+  description: string;
+  complete: boolean;
+  complete_par_id: string | null;
+  complete_a: string | null;
+  resident: { id: string; prenom: string; nom: string; chambre: string };
+};
+
 export function periodeSelonHeure(date = new Date()): Periode {
   const heure = date.getHours();
   if (heure >= 7 && heure < 15) return "jour";
