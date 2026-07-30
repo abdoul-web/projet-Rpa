@@ -19,6 +19,7 @@ export default async function DashboardLayout({
     { href: "/rapports", label: "Rapports interservices" },
     { href: "/echanges", label: "Échanges de quarts" },
     { href: "/menu", label: "Menu du jour" },
+    { href: "/plan-travail", label: "Plan de travail" },
     { href: "/profil", label: "Mon profil" },
   ];
 

@@ -41,6 +41,15 @@ export default async function AccueilPage() {
             Le menu de chaque unité, entré par la cuisine.
           </p>
         </Link>
+        <Link
+          href="/plan-travail"
+          className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-300"
+        >
+          <h2 className="font-medium text-slate-900">Plan de travail</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Les tâches de votre quart, à cocher au fur et à mesure.
+          </p>
+        </Link>
       </div>
     </div>
   );
