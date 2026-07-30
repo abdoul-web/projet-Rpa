@@ -11,8 +11,12 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
 
 - ✅ Espace employés : connexion, invitations par courriel, profils, rôles
   (admin / employé), gestion des employés par un administrateur
+- ✅ Échanges de quarts : ajout de ses quarts, mise en échange, prise d'un
+  quart offert par un collègue, approbation finale par un administrateur
 - ⏳ Rapports interservices — à venir
-- ⏳ Échanges de quarts — à venir
+- ⏳ Disponibilités + horaire — à venir
+- ⏳ Menu de cuisine + allergies — à venir
+- ⏳ Plan de travail avec rappels — à venir
 
 ## Mise en place
 
@@ -20,9 +24,9 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
 
 1. Créez un compte gratuit sur [supabase.com](https://supabase.com) et un
    nouveau projet.
-2. Dans **SQL Editor**, exécutez le contenu de
-   `supabase/migrations/0001_init.sql` (crée la table `profiles`, les rôles
-   et les règles de sécurité).
+2. Dans **SQL Editor**, exécutez dans l'ordre les fichiers du dossier
+   `supabase/migrations/` (`0001_init.sql` crée `profiles` et les rôles,
+   `0002_echanges_quarts.sql` ajoute les quarts et les échanges).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))
