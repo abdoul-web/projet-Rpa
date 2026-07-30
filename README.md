@@ -19,9 +19,9 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   cuisine, avec rappel des allergies des résidents de chaque unité
 - ✅ Plan de travail : tâches par bloc horaire (comme le plan papier),
   à cocher pendant le quart — chaque case garde qui l'a cochée et à
-  quelle heure. Un plan réel (PAB ailes A, nuit 00h-08h) est déjà
-  configuré comme exemple ; les autres plans se créent depuis l'écran
-  d'administration
+  quelle heure. Trois plans réels sont déjà configurés comme exemples
+  (PAB ailes A : nuit 00h-08h, soir 14h-22h, soir 15h30-00h) ; les
+  autres (jour, autres ailes) se créent depuis l'écran d'administration
 - ⏳ Disponibilités + horaire — à venir
 - ⏳ Notifications programmées (rappel au moment prévu) — à venir, une
   fois le plan de travail éprouvé
@@ -41,7 +41,8 @@ résident peut être rattaché à une unité.
    `0002_echanges_quarts.sql` ajoute les quarts et les échanges,
    `0003_rapports_interservices.sql` ajoute les résidents et leurs notes,
    `0004_unites_menus.sql` ajoute les unités et le menu du jour,
-   `0005_plan_travail.sql` ajoute le plan de travail (avec un exemple réel)).
+   `0005_plan_travail.sql` ajoute le plan de travail (avec un exemple réel),
+   `0006_plan_travail_soir.sql` ajoute les plans de soir (14h-22h et 15h30-00h)).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))
