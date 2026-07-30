@@ -13,7 +13,7 @@ export default async function AccueilPage() {
         Bienvenue dans l&apos;espace employés de la résidence.
       </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <Link
           href="/rapports"
           className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-300"
@@ -30,6 +30,15 @@ export default async function AccueilPage() {
           <h2 className="font-medium text-slate-900">Échanges de quarts</h2>
           <p className="mt-1 text-sm text-slate-500">
             Proposez ou prenez un quart de travail.
+          </p>
+        </Link>
+        <Link
+          href="/menu"
+          className="rounded-xl border border-slate-200 bg-white p-5 hover:border-slate-300"
+        >
+          <h2 className="font-medium text-slate-900">Menu du jour</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Le menu de chaque unité, entré par la cuisine.
           </p>
         </Link>
       </div>

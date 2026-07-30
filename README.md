@@ -15,9 +15,14 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   quart offert par un collègue, approbation finale par un administrateur
 - ✅ Rapports interservices : notes par résident pour chaque quart
   (jour/soir/nuit), avec suivi structuré des soins d'hygiène
+- ✅ Menu du jour : menu par unité (déjeuner/dîner/souper) entré par la
+  cuisine, avec rappel des allergies des résidents de chaque unité
 - ⏳ Disponibilités + horaire — à venir
-- ⏳ Menu de cuisine + allergies — à venir
 - ⏳ Plan de travail avec rappels — à venir
+
+La résidence peut être divisée en une ou plusieurs unités (configurable
+par un administrateur dans **Menu du jour > Gérer les unités**) — chaque
+résident peut être rattaché à une unité.
 
 ## Mise en place
 
@@ -28,7 +33,8 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
 2. Dans **SQL Editor**, exécutez dans l'ordre les fichiers du dossier
    `supabase/migrations/` (`0001_init.sql` crée `profiles` et les rôles,
    `0002_echanges_quarts.sql` ajoute les quarts et les échanges,
-   `0003_rapports_interservices.sql` ajoute les résidents et leurs notes).
+   `0003_rapports_interservices.sql` ajoute les résidents et leurs notes,
+   `0004_unites_menus.sql` ajoute les unités et le menu du jour).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))

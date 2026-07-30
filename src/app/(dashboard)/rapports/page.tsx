@@ -10,6 +10,7 @@ import {
   type NoteResident,
   type Periode,
   type Resident,
+  type Unite,
 } from "@/lib/rapports";
 import { ajouterNote, ajouterResident, changerStatutResident } from "./actions";
 
@@ -39,7 +40,7 @@ export default async function RapportsPage({
 
   const supabase = await createClient();
 
-  const [{ data: residents }, { data: notes }] = await Promise.all([
+  const [{ data: residents }, { data: notes }, { data: unites }] = await Promise.all([
     supabase
       .from("residents")
       .select("*")
@@ -51,7 +52,12 @@ export default async function RapportsPage({
       .eq("date", date)
       .eq("quart", quart)
       .order("created_at", { ascending: true }),
+    supabase.from("unites").select("*").eq("statut", "actif").order("nom"),
   ]);
+
+  const unitesParId = new Map(
+    ((unites ?? []) as Unite[]).map((unite) => [unite.id, unite.nom]),
+  );
 
   const notesParResident = new Map<string, NoteResident[]>();
   for (const note of (notes ?? []) as NoteResident[]) {
@@ -126,7 +132,17 @@ export default async function RapportsPage({
                     Chambre {resident.chambre}
                   </span>
                 )}
+                {resident.unite_id && unitesParId.has(resident.unite_id) && (
+                  <span className="ml-2 text-sm font-normal text-slate-400">
+                    · {unitesParId.get(resident.unite_id)}
+                  </span>
+                )}
               </h2>
+              {resident.allergies && (
+                <p className="mt-1 text-sm text-red-700">
+                  ⚠ Allergies : {resident.allergies}
+                </p>
+              )}
 
               <ul className="mt-3 space-y-2">
                 {notesResident.map((note) => (
@@ -188,7 +204,7 @@ export default async function RapportsPage({
       {profile.role === "admin" && (
         <section className="rounded-xl border border-slate-200 bg-white p-5">
           <h2 className="font-medium text-slate-900">Gérer les résidents</h2>
-          <form action={ajouterResident} className="mt-3 grid gap-3 sm:grid-cols-4">
+          <form action={ajouterResident} className="mt-3 grid gap-3 sm:grid-cols-3">
             <input
               name="prenom"
               placeholder="Prénom"
@@ -206,7 +222,24 @@ export default async function RapportsPage({
               placeholder="Chambre"
               className="rounded-md border border-slate-300 px-3 py-2 text-sm"
             />
-            <button className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+            <select
+              name="unite_id"
+              defaultValue=""
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value="">Aucune unité</option>
+              {(unites as Unite[] | null)?.map((unite) => (
+                <option key={unite.id} value={unite.id}>
+                  {unite.nom}
+                </option>
+              ))}
+            </select>
+            <input
+              name="allergies"
+              placeholder="Allergies (ex: arachides, latex)"
+              className="rounded-md border border-slate-300 px-3 py-2 text-sm sm:col-span-2"
+            />
+            <button className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 sm:col-span-3">
               Ajouter
             </button>
           </form>
@@ -220,6 +253,9 @@ export default async function RapportsPage({
                 <span>
                   {resident.prenom} {resident.nom}
                   {resident.chambre ? ` — Chambre ${resident.chambre}` : ""}
+                  {resident.unite_id && unitesParId.has(resident.unite_id)
+                    ? ` · ${unitesParId.get(resident.unite_id)}`
+                    : ""}
                 </span>
                 <form action={changerStatutResident}>
                   <input type="hidden" name="residentId" value={resident.id} />

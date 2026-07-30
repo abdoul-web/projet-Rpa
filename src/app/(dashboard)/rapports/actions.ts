@@ -46,6 +46,8 @@ export async function ajouterResident(formData: FormData) {
   const prenom = String(formData.get("prenom") ?? "").trim();
   const nom = String(formData.get("nom") ?? "").trim();
   const chambre = String(formData.get("chambre") ?? "").trim();
+  const allergies = String(formData.get("allergies") ?? "").trim();
+  const unite_id = String(formData.get("unite_id") ?? "") || null;
 
   if (!prenom || !nom) {
     throw new Error("Prénom et nom du résident sont requis.");
@@ -54,10 +56,11 @@ export async function ajouterResident(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase
     .from("residents")
-    .insert({ prenom, nom, chambre });
+    .insert({ prenom, nom, chambre, allergies, unite_id });
 
   if (error) throw new Error(error.message);
   revalidatePath("/rapports");
+  revalidatePath("/menu");
 }
 
 export async function changerStatutResident(formData: FormData) {
@@ -77,4 +80,5 @@ export async function changerStatutResident(formData: FormData) {
 
   if (error) throw new Error(error.message);
   revalidatePath("/rapports");
+  revalidatePath("/menu");
 }

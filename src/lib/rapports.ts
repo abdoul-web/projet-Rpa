@@ -8,12 +8,20 @@ export const LIBELLES_PERIODE: Record<Periode, string> = {
 
 export const ORDRE_PERIODES: Periode[] = ["jour", "soir", "nuit"];
 
+export type Unite = {
+  id: string;
+  nom: string;
+  statut: "actif" | "inactif";
+};
+
 export type Resident = {
   id: string;
   prenom: string;
   nom: string;
   chambre: string;
   statut: "actif" | "inactif";
+  unite_id: string | null;
+  allergies: string;
 };
 
 export type ToiletteStatut = "fait" | "non_fait" | "refuse";
