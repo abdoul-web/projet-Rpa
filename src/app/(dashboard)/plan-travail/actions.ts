@@ -112,6 +112,33 @@ export async function ajouterTache(formData: FormData) {
   revalidatePath("/plan-travail");
 }
 
+export async function basculerAbonnementPlan(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Non authentifié.");
+
+  const planId = String(formData.get("planId") ?? "");
+  const abonne = String(formData.get("abonne") ?? "") === "true";
+
+  if (abonne) {
+    const { error } = await supabase
+      .from("abonnements_plan")
+      .delete()
+      .eq("employe_id", user.id)
+      .eq("plan_id", planId);
+    if (error) throw new Error(error.message);
+  } else {
+    const { error } = await supabase
+      .from("abonnements_plan")
+      .insert({ employe_id: user.id, plan_id: planId });
+    if (error) throw new Error(error.message);
+  }
+
+  revalidatePath("/plan-travail");
+}
+
 export async function supprimerTache(formData: FormData) {
   await requireAdmin();
 

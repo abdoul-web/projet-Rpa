@@ -23,9 +23,11 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   comme exemples (nuit 00h-08h, jour 6h-14h, jour 6h30-15h, soir
   14h-22h, soir 15h30-00h) ; les autres ailes se créent depuis l'écran
   d'administration
+- ✅ Notifications programmées : rappel push envoyé à l'heure de chaque
+  tâche du plan de travail (aux employés qui s'y sont abonnés), tant
+  qu'elle n'est pas déjà cochée. Fonctionne sur téléphone (Android
+  directement, iPhone via "Ajouter à l'écran d'accueil")
 - ⏳ Disponibilités + horaire — à venir
-- ⏳ Notifications programmées (rappel au moment prévu) — à venir, une
-  fois le plan de travail éprouvé
 
 La résidence peut être divisée en une ou plusieurs unités (configurable
 par un administrateur dans **Menu du jour > Gérer les unités**) — chaque
@@ -44,7 +46,8 @@ résident peut être rattaché à une unité.
    `0004_unites_menus.sql` ajoute les unités et le menu du jour,
    `0005_plan_travail.sql` ajoute le plan de travail (avec un exemple réel),
    `0006_plan_travail_soir.sql` ajoute les plans de soir (14h-22h et 15h30-00h),
-   `0007_plan_travail_jour.sql` ajoute les plans de jour (6h-14h et 6h30-15h)).
+   `0007_plan_travail_jour.sql` ajoute les plans de jour (6h-14h et 6h30-15h),
+   `0008_notifications.sql` ajoute les abonnements aux rappels).
 3. Dans **Authentication > Emails**, configurez le modèle d'invitation
    ("Invite user") pour qu'il pointe vers `/auth/confirm` (voir
    [documentation Supabase SSR](https://supabase.com/docs/guides/auth/server-side/nextjs))
@@ -80,7 +83,40 @@ invitation). Pour créer le tout premier administrateur :
 Ensuite, vous pourrez inviter les autres employés directement depuis
 l'application (page **Employés**).
 
-### 4. Lancer en local
+### 4. Activer les notifications programmées
+
+Cette étape est optionnelle — le reste de l'application fonctionne sans elle.
+
+1. Générez votre paire de clés VAPID (une seule fois, à conserver) :
+   ```bash
+   node scripts/generate-vapid-keys.mjs
+   ```
+   Ajoutez `NEXT_PUBLIC_VAPID_PUBLIC_KEY` et `VAPID_PRIVATE_KEY` à `.env.local`,
+   ainsi que `VAPID_SUBJECT` (ex: `mailto:vous@exemple.com`).
+2. Générez une valeur aléatoire pour `CRON_SECRET` (ex: `openssl rand -hex 32`)
+   et ajoutez-la à `.env.local`. C'est le mot de passe qui protège la route
+   qui envoie les rappels.
+3. Une fois déployée (voir ci-dessous), configurez un service de cron
+   **gratuit** — par exemple [cron-job.org](https://cron-job.org) — pour
+   appeler cette URL **chaque minute** :
+   ```
+   https://votre-domaine.com/api/rappels/executer?secret=VOTRE_CRON_SECRET
+   ```
+4. Dans l'application, chaque employé doit :
+   - Sur la page **Plan de travail**, cliquer sur « Activer les rappels sur
+     cet appareil » (une fois par appareil).
+   - Cliquer sur « Recevoir un rappel pour chaque tâche » sur le(s) plan(s)
+     qui le concernent.
+   - **Sur iPhone** : Safari n'autorise les notifications que pour une page
+     "ajoutée à l'écran d'accueil" (bouton Partager → Sur l'écran d'accueil).
+     Ouvrez ensuite l'application depuis cette icône avant d'activer les
+     rappels. Sur Android/Chrome, ça fonctionne directement dans le
+     navigateur.
+
+Le fuseau horaire utilisé pour comparer l'heure des tâches est
+`America/Toronto` par défaut (variable `APP_TIMEZONE`).
+
+### 5. Lancer en local
 
 ```bash
 npm install

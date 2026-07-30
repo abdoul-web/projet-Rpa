@@ -10,11 +10,13 @@ import {
 import type { Unite } from "@/lib/rapports";
 import {
   ajouterTache,
+  basculerAbonnementPlan,
   basculerTache,
   changerStatutPlan,
   creerPlan,
   supprimerTache,
 } from "./actions";
+import { RappelsToggle } from "./RappelsToggle";
 
 function heureActuelle() {
   const maintenant = new Date();
@@ -35,14 +37,17 @@ export default async function PlanTravailPage({
   const date = params.date ?? new Date().toISOString().slice(0, 10);
   const supabase = await createClient();
 
-  const [{ data: plans }, { data: unites }] = await Promise.all([
+  const [{ data: plans }, { data: unites }, { data: abonnements }] = await Promise.all([
     supabase
       .from("plans_travail")
       .select("*")
       .eq("statut", "actif")
       .order("heure_debut"),
     supabase.from("unites").select("*").eq("statut", "actif").order("nom"),
+    supabase.from("abonnements_plan").select("plan_id").eq("employe_id", profile.id),
   ]);
+
+  const planIdsAbonnes = new Set((abonnements ?? []).map((a) => a.plan_id as string));
 
   const listePlans = (plans as PlanTravail[] | null) ?? [];
   const maintenant = heureActuelle();
@@ -93,6 +98,9 @@ export default async function PlanTravailPage({
         <p className="mt-1 text-sm text-slate-500">
           Les tâches à faire pendant votre quart, à cocher au fur et à mesure.
         </p>
+        <div className="mt-3">
+          <RappelsToggle employeId={profile.id} />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
@@ -137,6 +145,20 @@ export default async function PlanTravailPage({
 
       {planSelectionne && (
         <>
+          <form action={basculerAbonnementPlan} className="flex items-center gap-2">
+            <input type="hidden" name="planId" value={planSelectionne.id} />
+            <input
+              type="hidden"
+              name="abonne"
+              value={planIdsAbonnes.has(planSelectionne.id) ? "true" : "false"}
+            />
+            <button className="rounded-md border border-slate-300 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-100">
+              {planIdsAbonnes.has(planSelectionne.id)
+                ? `🔔 Rappels activés pour « ${planSelectionne.nom} » — désactiver`
+                : `🔕 Recevoir un rappel pour chaque tâche de « ${planSelectionne.nom} »`}
+            </button>
+          </form>
+
           {planSelectionne.regles_generales && (
             <section className="rounded-xl border border-amber-200 bg-amber-50 p-5">
               <h2 className="font-medium text-slate-900">
