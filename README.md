@@ -42,6 +42,10 @@ Construite avec [Next.js](https://nextjs.org) et [Supabase](https://supabase.com
   formulaires) téléversés par un administrateur, consultables par tous
 - ✅ Clavardage : discussion d'équipe en direct (messages instantanés,
   sans rafraîchir la page) — remplace le groupe Messenger
+- ✅ Aide (IA) : assistant qui répond aux questions sur l'utilisation de
+  l'application et sur le contenu des documents téléversés (politiques,
+  procédures) — **payant** (clé Anthropic requise, voir ci-dessous), ne
+  donne jamais de conseil médical ou de soins
 - ⏳ Disponibilités + horaire — délibérément laissé de côté pour l'instant
   (une seule personne fait l'horaire chaque semaine)
 - ⏳ Feuille de temps (heures créditées/débitées, entrée/sortie) — mis
@@ -145,7 +149,24 @@ Cette étape est optionnelle — le reste de l'application fonctionne sans elle.
 Le fuseau horaire utilisé pour comparer l'heure des tâches est
 `America/Toronto` par défaut (variable `APP_TIMEZONE`).
 
-### 5. Lancer en local
+### 5. Activer l'assistant IA (page Aide)
+
+Cette étape est optionnelle et **payante** — sans elle, tout le reste de
+l'application fonctionne normalement, la page Aide affiche simplement un
+message d'erreur.
+
+1. Créez un compte sur [console.anthropic.com](https://console.anthropic.com),
+   ajoutez un moyen de paiement et générez une clé API.
+2. Ajoutez `ANTHROPIC_API_KEY` à `.env.local` (et dans les variables
+   d'environnement de votre hébergeur en production).
+3. L'assistant répond seulement à deux types de questions : comment utiliser
+   l'application, et le contenu des documents déjà téléversés dans la page
+   **Documents** (PDF, images, fichiers texte). Il ne donne jamais de conseil
+   médical ou de soins de sa propre initiative. Le coût dépend de l'usage —
+   quelques dollars par mois pour une petite équipe est une estimation
+   raisonnable, mais surveillez votre consommation sur la console Anthropic.
+
+### 6. Lancer en local
 
 ```bash
 npm install

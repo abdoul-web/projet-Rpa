@@ -11,6 +11,7 @@ import {
   Megaphone,
   MessageCircle,
   Repeat,
+  Sparkles,
   User,
   UtensilsCrossed,
   Users,
@@ -26,6 +27,7 @@ const ICONES: Record<string, React.ComponentType<{ className?: string }>> = {
   "/plan-travail": Bell,
   "/conges": CalendarDays,
   "/documents": FileText,
+  "/aide": Sparkles,
   "/profil": User,
   "/employes": Users,
 };

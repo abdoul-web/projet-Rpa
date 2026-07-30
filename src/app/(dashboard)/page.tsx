@@ -6,6 +6,7 @@ import {
   Megaphone,
   MessageCircle,
   Repeat,
+  Sparkles,
   UtensilsCrossed,
   type LucideIcon,
 } from "lucide-react";
@@ -69,6 +70,12 @@ const CARTES: Carte[] = [
     label: "Documents",
     description: "Politiques, formulaires et procédures de la résidence.",
     Icon: FileText,
+  },
+  {
+    href: "/aide",
+    label: "Aide",
+    description: "Posez une question sur l'application ou sur les documents.",
+    Icon: Sparkles,
   },
 ];
 
