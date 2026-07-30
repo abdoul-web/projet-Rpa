@@ -32,7 +32,7 @@ export function Nav({ links }: { links: { href: string; label: string }[] }) {
   const pathname = usePathname();
 
   return (
-    <nav className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 pb-2">
+    <nav className="mx-auto flex max-w-5xl gap-5 overflow-x-auto px-4 pb-3 text-sm">
       {links.map((link) => {
         const actif = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
         const Icone = ICONES[link.href] ?? Home;
@@ -40,13 +40,13 @@ export function Nav({ links }: { links: { href: string; label: string }[] }) {
           <Link
             key={link.href}
             href={link.href}
-            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm ${
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 pb-1 ${
               actif
-                ? "bg-slate-900 text-white"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "border-accent font-medium text-slate-900"
+                : "border-transparent text-slate-500 hover:text-slate-900"
             }`}
           >
-            <Icone className="h-4 w-4" />
+            <Icone className={`h-4 w-4 ${actif ? "text-accent" : "text-slate-400"}`} />
             {link.label}
           </Link>
         );

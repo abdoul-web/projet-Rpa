@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { Sunrise } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { logout } from "@/app/login/actions";
 import { Nav } from "./Nav";
@@ -32,23 +31,21 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/85 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="flex items-center gap-2 font-semibold text-slate-900">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-              <Sunrise className="h-4 w-4" />
-            </span>
-            Espace employés
+    <div className="min-h-screen bg-white">
+      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
+          <span className="flex items-center gap-2 text-sm font-medium tracking-wide text-slate-900">
+            <span className="h-2 w-2 rounded-full bg-gradient-to-br from-amber-300 to-orange-500" />
+            ESPACE EMPLOYÉS
           </span>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-slate-500 sm:inline">
+          <div className="flex items-center gap-4">
+            <span className="hidden text-sm text-slate-400 sm:inline">
               {profile.prenom} {profile.nom}
             </span>
             <form action={logout}>
               <button
                 type="submit"
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 hover:shadow-sm"
+                className="text-sm text-slate-500 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
               >
                 Déconnexion
               </button>
@@ -57,7 +54,7 @@ export default async function DashboardLayout({
         </div>
         <Nav links={links} />
       </header>
-      <main className="mx-auto max-w-5xl animate-fade-in px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-5xl animate-fade-in px-4 py-10 sm:px-6">{children}</main>
     </div>
   );
 }

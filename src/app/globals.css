@@ -54,3 +54,46 @@ button:active {
 .animate-fade-in {
   animation: fade-in 0.4s ease-out both;
 }
+
+@keyframes sunrise-rise {
+  from {
+    transform: translate(-50%, calc(-50% + 46px)) scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sunrise-rays {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sunrise-sky {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sunrise-sky {
+  animation: sunrise-sky 1s ease-out both;
+}
+
+.sunrise-sun {
+  animation: sunrise-rise 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sunrise-rays {
+  animation: sunrise-rays 1.2s ease-out 0.5s both;
+}

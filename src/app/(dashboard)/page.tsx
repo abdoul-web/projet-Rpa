@@ -11,6 +11,7 @@ import {
 import { getCurrentProfile } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import type { Annonce } from "@/lib/babillard";
+import { SunriseBanner } from "./SunriseBanner";
 
 type Carte = {
   href: string;
@@ -64,6 +65,15 @@ const CARTES: Carte[] = [
   },
 ];
 
+function formatDateAujourdhui() {
+  const texte = new Date().toLocaleDateString("fr-CA", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return texte.charAt(0).toUpperCase() + texte.slice(1);
+}
+
 export default async function AccueilPage() {
   const profile = await getCurrentProfile();
   const supabase = await createClient();
@@ -79,45 +89,44 @@ export default async function AccueilPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900">
-        Bonjour {profile?.prenom} 👋
+      <SunriseBanner />
+
+      <p className="mt-6 text-sm text-slate-400">{formatDateAujourdhui()}</p>
+      <h1 className="mt-1 text-4xl font-light tracking-tight text-slate-900">
+        Bonjour, {profile?.prenom}.
       </h1>
-      <p className="mt-2 text-slate-600">
+      <p className="mt-3 text-slate-500">
         Bienvenue dans l&apos;espace employés de la résidence.
       </p>
 
       {dernieresAnnonces.length > 0 && (
-        <div className="mt-6 space-y-2">
+        <div className="mt-8 space-y-3">
           {dernieresAnnonces.map((annonce) => (
             <Link
               key={annonce.id}
               href="/babillard"
-              className="block rounded-xl border border-amber-200 bg-amber-50 p-4 hover:border-amber-300 hover:shadow-sm"
+              className="flex items-start gap-3 border-l-2 border-accent pl-4 hover:border-accent/70"
             >
-              <p className="text-sm font-medium text-slate-900">
-                {annonce.epingle && "📌 "}
-                {annonce.titre}
-              </p>
-              {annonce.contenu && (
-                <p className="mt-1 line-clamp-2 text-sm text-slate-600">{annonce.contenu}</p>
-              )}
+              <div>
+                <p className="text-sm font-medium text-slate-900">
+                  {annonce.epingle && "📌 "}
+                  {annonce.titre}
+                </p>
+                {annonce.contenu && (
+                  <p className="mt-1 line-clamp-2 text-sm text-slate-500">{annonce.contenu}</p>
+                )}
+              </div>
             </Link>
           ))}
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-3">
         {CARTES.map(({ href, label, description, Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="group rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent transition group-hover:bg-accent group-hover:text-accent-foreground">
-              <Icon className="h-5 w-5" />
-            </span>
-            <h2 className="mt-3 font-medium text-slate-900">{label}</h2>
-            <p className="mt-1 text-sm text-slate-500">{description}</p>
+          <Link key={href} href={href} className="group block">
+            <Icon className="h-6 w-6 text-accent/70 transition group-hover:text-accent" />
+            <h2 className="mt-4 text-lg text-slate-900">{label}</h2>
+            <p className="mt-1 text-sm text-slate-400">{description}</p>
           </Link>
         ))}
       </div>
