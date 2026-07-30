@@ -1,7 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Sunrise } from "lucide-react";
 import { getCurrentProfile } from "@/lib/profile";
 import { logout } from "@/app/login/actions";
+import { Nav } from "./Nav";
 
 export default async function DashboardLayout({
   children,
@@ -32,38 +33,31 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
+      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/85 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <span className="font-semibold text-slate-900">
+          <span className="flex items-center gap-2 font-semibold text-slate-900">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+              <Sunrise className="h-4 w-4" />
+            </span>
             Espace employés
           </span>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-500">
+            <span className="hidden text-sm text-slate-500 sm:inline">
               {profile.prenom} {profile.nom}
             </span>
             <form action={logout}>
               <button
                 type="submit"
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100 hover:shadow-sm"
               >
                 Déconnexion
               </button>
             </form>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-5xl gap-1 overflow-x-auto px-4 pb-2">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <Nav links={links} />
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-5xl animate-fade-in px-4 py-8">{children}</main>
     </div>
   );
 }
