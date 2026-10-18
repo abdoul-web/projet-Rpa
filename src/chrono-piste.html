@@ -720,16 +720,23 @@ details.card[open] > summary::after { content: "–"; }
     const line = $("#lineOverlay");
     line.classList.add("hit"); setTimeout(() => line.classList.remove("hit"), 150);
     if (S.status !== "running") return; // on montre la détection sans l'enregistrer
+    const p = addPass(performance.timeOrigin + ts, null, "cam", null);
+    // Le temps est celui du contact avec la ligne ; la photo est prise un peu après,
+    // quand le kart est en plein devant la caméra et que son numéro est visible.
+    if (p) setTimeout(() => { const img = takeSnapshot(); if (img) { thumbs.set(p.id, img); render(); } }, SNAP_DELAY_MS);
+  }
+
+  const SNAP_DELAY_MS = 150;
+  function takeSnapshot() {
     const vw = video.videoWidth, vh = video.videoHeight;
+    if (!stream || !vw || !vh) return null;
     snap.width = 320; snap.height = Math.round((320 * vh) / vw);
     const c = snap.getContext("2d");
     c.drawImage(video, 0, 0, snap.width, snap.height);
     c.fillStyle = "rgba(255,116,51,.9)";
     if (S.settings.orient === "v") c.fillRect(S.settings.pos * snap.width - 1, 0, 2, snap.height);
     else c.fillRect(0, S.settings.pos * snap.height - 1, snap.width, 2);
-    let img = null;
-    try { img = snap.toDataURL("image/jpeg", 0.65); } catch {}
-    addPass(performance.timeOrigin + ts, null, "cam", img);
+    try { return snap.toDataURL("image/jpeg", 0.65); } catch { return null; }
   }
 
   render();
