@@ -1,0 +1,741 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Chrono Piste</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: écran de chronométrage. Colonne gauche = poste de l'opérateur (caméra, passages, boutons), colonne droite = classement. Une seule colonne sur téléphone. */
+:root {
+  --bg: #eceff2;
+  --surface: #ffffff;
+  --sunk: #f4f6f8;
+  --ink: #15191e;
+  --muted: #5a6470;
+  --line: #d3d9df;
+  --accent: #d9480f;
+  --accent-ink: #ffffff;
+  --good: #1c7c45;
+  --bad: #c22626;
+  --gold: #b7791f;
+  --font-display: "Saira Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1114; --surface: #171b20; --sunk: #1e232a; --ink: #e7ebee; --muted: #94a0ab;
+    --line: #2b323a; --accent: #ff7433; --accent-ink: #160a03; --good: #43c27a; --bad: #ff6b6b; --gold: #f0b44c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1114; --surface: #171b20; --sunk: #1e232a; --ink: #e7ebee; --muted: #94a0ab;
+  --line: #2b323a; --accent: #ff7433; --accent-ink: #160a03; --good: #43c27a; --bad: #ff6b6b; --gold: #f0b44c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+.app { max-width: 1240px; margin: 0 auto; padding-block: 12px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 14px; }
+h1, h2 { font-family: var(--font-display); font-weight: 700; letter-spacing: .01em; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.9rem; line-height: 1; }
+h2 { font-size: 1.25rem; text-transform: uppercase; letter-spacing: .06em; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* En-tête */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.flag { width: 28px; height: 28px; border-radius: 4px; flex: none; background: conic-gradient(var(--ink) 0 25%, var(--surface) 0 50%, var(--ink) 0 75%, var(--surface) 0) 0 0 / 14px 14px; border: 1px solid var(--ink); }
+.race-status { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.clock { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 5.5ch; text-align: right; }
+.pill { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 4px 10px; border-radius: 99px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); }
+.pill.running { background: var(--good); color: var(--surface); border-color: var(--good); }
+.pill.finished { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.race-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--sunk); border-radius: 8px; padding: 9px 14px; font-weight: 600; }
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.small { padding: 6px 10px; font-size: .85rem; }
+.btn.danger { background: var(--bad); color: var(--surface); border-color: var(--bad); }
+
+.banner { background: var(--surface); border: 1px dashed var(--accent); border-radius: var(--radius); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.banner strong { color: var(--accent); }
+
+/* Grille */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hint { color: var(--muted); font-size: .88rem; margin: 0; }
+.empty { color: var(--muted); font-size: .9rem; margin: 0; padding: 10px; background: var(--sunk); border-radius: 8px; }
+.count { font-family: var(--font-mono); font-weight: 600; background: var(--sunk); border-radius: 99px; padding: 2px 10px; }
+.count.alert { background: var(--accent); color: var(--accent-ink); }
+
+/* Caméra */
+.viewport { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; }
+.viewport video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+.line-overlay { position: absolute; background: var(--accent); box-shadow: 0 0 0 1px rgba(0,0,0,.5); pointer-events: none; }
+.line-overlay.v { top: 0; bottom: 0; width: 3px; transform: translateX(-50%); }
+.line-overlay.h { left: 0; right: 0; height: 3px; transform: translateY(-50%); }
+.line-overlay.hit { background: #fff; }
+.cam-empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: #cfd6dc; padding: 16px; font-size: .9rem; }
+.meter { position: absolute; left: 8px; right: 8px; bottom: 8px; height: 6px; background: rgba(255,255,255,.2); border-radius: 3px; overflow: hidden; }
+.meter span { display: block; height: 100%; width: 0; background: var(--accent); }
+.meter i { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--muted); }
+.field input[type="range"] { width: 100%; accent-color: var(--accent); }
+.field select, .field input[type="number"], .field input[type="text"] { background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; color: var(--ink); min-width: 0; }
+
+/* Passages à identifier */
+.pending { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pending li { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 10px; align-items: start; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--sunk); }
+.pending img, .pending .noimg { width: 132px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; background: #000; display: block; max-width: 100%; }
+.pending .noimg { display: grid; place-items: center; color: #aab3bb; font-size: .75rem; }
+.pending .meta { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pending .time { font-family: var(--font-mono); font-weight: 600; }
+.assign { display: flex; flex-wrap: wrap; gap: 6px; }
+.chipbtn { min-width: 44px; height: 40px; border-radius: 8px; border: 2px solid rgba(0,0,0,.25); font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; padding: 0 8px; }
+.ignore { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; height: 40px; padding: 0 10px; font-size: .85rem; }
+
+/* Boutons manuels */
+.kart-buttons { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+.kbtn { position: relative; border: 2px solid var(--line); background: var(--sunk); border-radius: 10px; padding: 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; min-height: 104px; }
+.kbtn:active { transform: scale(.97); }
+.kbtn .num { font-family: var(--font-display); font-weight: 700; font-size: 2.3rem; line-height: 1; display: flex; align-items: center; gap: 8px; }
+.kbtn .dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); flex: none; }
+.kbtn .who { font-size: .82rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kbtn .last { font-family: var(--font-mono); font-size: .85rem; }
+.kbtn.flash { border-color: var(--accent); }
+.kart-buttons.off .kbtn { opacity: .55; }
+
+/* Classement */
+.winner { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 8px; background: var(--sunk); border-left: 0; }
+.winner .badge { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; min-width: 64px; height: 64px; border-radius: 10px; display: grid; place-items: center; border: 2px solid rgba(0,0,0,.25); flex: none; }
+.winner .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--gold); font-weight: 600; }
+.winner .name { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.winner .best { font-family: var(--font-mono); font-size: 1.05rem; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+td.t { font-family: var(--font-mono); }
+td.pos { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; width: 2.5rem; }
+tr.first td.pos { color: var(--gold); }
+.kcell { display: flex; align-items: center; gap: 8px; }
+.ktag { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; min-width: 32px; height: 28px; border-radius: 6px; display: inline-grid; place-items: center; padding: 0 6px; border: 1px solid rgba(0,0,0,.25); }
+.kname { color: var(--muted); font-size: .85rem; overflow: hidden; text-overflow: ellipsis; max-width: 12ch; }
+.best-mark { color: var(--good); font-weight: 600; }
+
+/* Détail des tours */
+.laps { display: flex; flex-direction: column; gap: 12px; }
+.laprow { display: flex; flex-direction: column; gap: 6px; }
+.laprow-head { display: flex; align-items: center; gap: 8px; }
+.lapchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lap { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--line); background: var(--sunk); border-radius: 6px; padding: 3px 4px 3px 8px; font-family: var(--font-mono); font-size: .82rem; }
+.lap.best { border-color: var(--good); color: var(--good); font-weight: 600; }
+.lap.short { border-color: var(--bad); color: var(--bad); }
+.lap .n { color: var(--muted); font-size: .72rem; }
+.lap button { border: 0; background: transparent; color: var(--muted); width: 24px; height: 24px; border-radius: 4px; line-height: 1; padding: 0; }
+.lap button:hover { background: var(--line); color: var(--ink); }
+
+/* Réglages */
+details.card > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::after { content: "+"; font-family: var(--font-mono); font-size: 1.3rem; color: var(--muted); }
+details.card[open] > summary::after { content: "–"; }
+.kart-rows { display: flex; flex-direction: column; gap: 8px; }
+.kart-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 46px 40px; gap: 8px; align-items: center; }
+.kart-row input[type="color"] { width: 46px; height: 38px; border: 1px solid var(--line); border-radius: 6px; background: var(--sunk); padding: 2px; }
+.kart-row input { min-width: 0; }
+.kart-row input[type="text"] { background: var(--sunk); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; height: 38px; color: var(--ink); }
+.kart-row .rm { height: 38px; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 6px; }
+.check { display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 8px; font-size: .9rem; max-width: calc(100% - 32px); z-index: 20; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+@media (prefers-reduced-motion: reduce) { .kbtn:active { transform: none; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="flag" aria-hidden="true"></span><h1>Chrono Piste</h1></div>
+    <div class="race-status">
+      <span id="statusPill" class="pill">Prête</span>
+      <span id="clock" class="clock" aria-label="Temps écoulé">0:00</span>
+    </div>
+    <div class="race-actions">
+      <button id="btnStart" class="btn primary" type="button">Départ</button>
+      <button id="btnStop" class="btn" type="button">Arrêter</button>
+      <button id="btnNew" class="btn" type="button">Nouvelle course</button>
+    </div>
+  </header>
+
+  <div id="exampleBanner" class="banner" hidden>
+    <span><strong>Exemple de course.</strong> Les temps affichés sont inventés pour montrer le résultat. Appuie sur « Nouvelle course » pour commencer pour vrai.</span>
+  </div>
+  <div id="confirmBar" class="banner" hidden>
+    <span>Effacer la course en cours et ses temps ?</span>
+    <button id="confirmYes" class="btn small danger" type="button">Oui, effacer</button>
+    <button id="confirmNo" class="btn small" type="button">Annuler</button>
+  </div>
+
+  <main class="grid">
+    <section class="col">
+      <div class="card">
+        <div class="card-head">
+          <h2>Caméra</h2>
+          <button id="btnCam" class="btn small" type="button">Activer la caméra</button>
+        </div>
+        <div class="viewport" id="viewport">
+          <video id="video" playsinline muted></video>
+          <div id="camEmpty" class="cam-empty">Place le téléphone de côté, face à la ligne d'arrivée, puis active la caméra.</div>
+          <div id="lineOverlay" class="line-overlay v" style="left:50%"></div>
+          <div class="meter" aria-hidden="true"><span id="meterBar"></span><i id="meterThr"></i></div>
+        </div>
+        <div class="controls">
+          <label class="field">Position de la ligne
+            <input id="setPos" type="range" min="0.05" max="0.95" step="0.01">
+          </label>
+          <label class="field">Sensibilité
+            <input id="setSens" type="range" min="1" max="10" step="1">
+          </label>
+          <label class="field">Les karts passent
+            <select id="setOrient">
+              <option value="v">De gauche à droite</option>
+              <option value="h">De haut en bas</option>
+            </select>
+          </label>
+        </div>
+        <p id="camMsg" class="hint">Chaque fois qu'un kart traverse la ligne orange, l'app note l'heure exacte et prend une photo. Tu choisis ensuite quel kart c'était.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Passages à identifier</h2>
+          <span id="pendingCount" class="count">0</span>
+        </div>
+        <ul id="pendingList" class="pending"></ul>
+        <p id="pendingEmpty" class="empty">Aucun passage en attente. Les détections de la caméra apparaissent ici.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Passage manuel</h2></div>
+        <p class="hint">Touche un kart au moment où il traverse la ligne. Sert aussi si la caméra en a manqué un.</p>
+        <div id="kartButtons" class="kart-buttons"></div>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="card">
+        <div class="card-head">
+          <h2>Classement</h2>
+          <button id="btnCopy" class="btn small" type="button">Copier les résultats</button>
+        </div>
+        <div id="winner" class="winner"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pos</th><th>Kart</th><th>Meilleur tour</th><th>Écart</th><th>Tours</th><th>Dernier</th></tr></thead>
+            <tbody id="standings"></tbody>
+          </table>
+        </div>
+        <p class="hint">Le premier passage de chaque kart part son chrono, comme le laser. Le classement se fait au meilleur tour.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Tours par kart</h2></div>
+        <p class="hint"><span class="mono">↩</span> renvoie un passage dans « à identifier » (mauvais kart). <span class="mono">✕</span> efface un passage. Un tour en rouge est plus court que le minimum et ne compte pas.</p>
+        <div id="laps" class="laps"></div>
+      </div>
+
+      <details class="card" id="setupCard">
+        <summary><h2>Karts et réglages</h2></summary>
+        <div id="kartRows" class="kart-rows"></div>
+        <div><button id="btnAddKart" class="btn small" type="button">Ajouter un kart</button></div>
+        <div class="controls">
+          <label class="field">Tour minimum (secondes)
+            <input id="setMinLap" type="number" min="0" step="1">
+          </label>
+          <label class="field">Pause après une détection (secondes)
+            <input id="setCooldown" type="number" min="0.2" max="10" step="0.1">
+          </label>
+        </div>
+        <label class="check"><input id="setBeep" type="checkbox"> Bip à chaque passage</label>
+      </details>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const STORE = "chrono-piste-v1";
+  const COLORS = ["#d62828", "#1d4ed8", "#15803d", "#eab308", "#f2f2f2", "#7c3aed", "#ea580c", "#0891b2"];
+  const nowMs = () => performance.timeOrigin + performance.now();
+  const uid = () => Math.random().toString(36).slice(2, 10);
+  const thumbs = new Map(); // id du passage -> photo (gardée en mémoire seulement)
+
+  const defaultSettings = () => ({ pos: 0.5, sens: 5, orient: "v", cooldown: 1, minLap: 8, beep: true });
+
+  function freshKarts() {
+    return [1, 2, 3, 4, 5].map((n, i) => ({ id: uid(), num: String(n), name: "", color: COLORS[i] }));
+  }
+
+  function exampleState() {
+    const karts = freshKarts();
+    karts[0].name = "Exemple A"; karts[1].name = "Exemple B"; karts[2].name = "Exemple C";
+    karts[3].name = "Exemple D"; karts[4].name = "Exemple E";
+    let seed = 7;
+    const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    const start = nowMs() - 6 * 60000;
+    const pace = [33.9, 34.6, 33.4, 35.2, 34.1];
+    const passes = [];
+    karts.forEach((k, i) => {
+      let t = start + 4000 + i * 2600;
+      passes.push({ id: uid(), kartId: k.id, t, src: "cam" });
+      for (let lap = 0; lap < 8; lap++) {
+        t += (pace[i] + rnd() * 1.6 - (lap === 0 ? -1.2 : 0)) * 1000;
+        passes.push({ id: uid(), kartId: k.id, t, src: "cam" });
+      }
+    });
+    return { karts, passes, status: "finished", startedAt: start, endedAt: start + 5.5 * 60000, example: true, settings: defaultSettings() };
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!Array.isArray(s.karts) || !Array.isArray(s.passes)) return null;
+      s.settings = Object.assign(defaultSettings(), s.settings || {});
+      if (s.status === "running" && !s.startedAt) s.status = "ready";
+      return s;
+    } catch { return null; }
+  }
+
+  let S = load() || exampleState();
+  let saveTimer = 0;
+  function save() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem(STORE, JSON.stringify(S)); } catch {}
+    }, 250);
+  }
+
+  // ---------- Formatage ----------
+  function fmtLap(ms) {
+    if (ms == null || !isFinite(ms)) return "—";
+    const cs = Math.round(ms / 10);
+    const m = Math.floor(cs / 6000), r = cs % 6000;
+    const s = Math.floor(r / 100), c = String(r % 100).padStart(2, "0");
+    return m ? `${m}:${String(s).padStart(2, "0")}.${c}` : `${s}.${c}`;
+  }
+  function fmtClock(ms) {
+    const t = Math.max(0, Math.floor(ms / 1000));
+    return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function textOn(hex) {
+    const h = (hex || "#888888").replace("#", "");
+    const n = parseInt(h.length === 3 ? h.split("").map((x) => x + x).join("") : h, 16);
+    const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? "#111111" : "#ffffff";
+  }
+  const kStyle = (k) => `background:${esc(k.color)};color:${textOn(k.color)}`;
+  const kLabel = (k) => (k.name ? `Kart ${k.num} · ${k.name}` : `Kart ${k.num}`);
+  const raceTime = (t) => (S.startedAt ? fmtLap(t - S.startedAt) : "");
+
+  let toastTimer = 0;
+  function toast(msg) {
+    const el = $("#toast");
+    el.textContent = msg; el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => (el.hidden = true), 2600);
+  }
+
+  // ---------- Calculs ----------
+  function standings() {
+    const minMs = (Number(S.settings.minLap) || 0) * 1000;
+    const rows = S.karts.map((k) => ({ kart: k, passes: [], laps: [], best: null, last: null }));
+    const byId = new Map(rows.map((r) => [r.kart.id, r]));
+    for (const p of S.passes) if (p.kartId && byId.has(p.kartId)) byId.get(p.kartId).passes.push(p);
+    for (const r of rows) {
+      r.passes.sort((a, b) => a.t - b.t);
+      for (let i = 1; i < r.passes.length; i++) {
+        const ms = r.passes[i].t - r.passes[i - 1].t;
+        r.laps.push({ n: i, ms, pass: r.passes[i], short: ms < minMs });
+      }
+      const valid = r.laps.filter((l) => !l.short);
+      r.best = valid.length ? valid.reduce((a, b) => (a.ms <= b.ms ? a : b)) : null;
+      r.last = r.laps.length ? r.laps[r.laps.length - 1] : null;
+      r.count = valid.length;
+    }
+    rows.sort((a, b) => (a.best ? a.best.ms : Infinity) - (b.best ? b.best.ms : Infinity) || b.count - a.count);
+    return rows;
+  }
+
+  // ---------- Actions ----------
+  let audioCtx = null;
+  function beep() {
+    if (!S.settings.beep || !audioCtx) return;
+    try {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = 1320; g.gain.value = 0.15;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + 0.08);
+    } catch {}
+  }
+
+  function addPass(t, kartId, src, thumb) {
+    if (S.status !== "running") {
+      toast(S.status === "ready" ? "Appuie sur « Départ » avant d'enregistrer des passages." : "La course est arrêtée. Lance une nouvelle course.");
+      return null;
+    }
+    const p = { id: uid(), kartId: kartId || null, t, src };
+    S.passes.push(p);
+    if (thumb) thumbs.set(p.id, thumb);
+    beep();
+    save(); render();
+    return p;
+  }
+
+  function startRace() {
+    if (S.status !== "ready") return;
+    try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch {}
+    S.status = "running"; S.startedAt = nowMs(); S.endedAt = null;
+    requestWake();
+    save(); render();
+    toast("C'est parti. Le chrono de chaque kart part à son premier passage.");
+  }
+  function stopRace() {
+    if (S.status !== "running") return;
+    S.status = "finished"; S.endedAt = nowMs();
+    save(); render();
+  }
+  function newRace() {
+    const karts = S.example ? freshKarts() : S.karts;
+    S = { karts, passes: [], status: "ready", startedAt: null, endedAt: null, example: false, settings: S.settings };
+    thumbs.clear();
+    $("#confirmBar").hidden = true;
+    save(); render(); renderSetup();
+  }
+
+  $("#btnStart").addEventListener("click", startRace);
+  $("#btnStop").addEventListener("click", stopRace);
+  $("#btnNew").addEventListener("click", () => {
+    if (S.example || S.passes.length === 0) newRace();
+    else $("#confirmBar").hidden = false;
+  });
+  $("#confirmYes").addEventListener("click", newRace);
+  $("#confirmNo").addEventListener("click", () => ($("#confirmBar").hidden = true));
+
+  $("#kartButtons").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-kart]");
+    if (!b) return;
+    const p = addPass(nowMs(), b.dataset.kart, "manuel");
+    if (p) { b.classList.add("flash"); setTimeout(() => b.classList.remove("flash"), 300); }
+  });
+
+  $("#pendingList").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const p = S.passes.find((x) => x.id === b.dataset.pass);
+    if (!p) return;
+    if (b.dataset.ignore) { S.passes = S.passes.filter((x) => x !== p); thumbs.delete(p.id); }
+    else p.kartId = b.dataset.assign;
+    save(); render();
+  });
+
+  $("#laps").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const p = S.passes.find((x) => x.id === b.dataset.pass);
+    if (!p) return;
+    if (b.dataset.act === "del") { S.passes = S.passes.filter((x) => x !== p); thumbs.delete(p.id); }
+    if (b.dataset.act === "back") p.kartId = null;
+    save(); render();
+  });
+
+  $("#btnCopy").addEventListener("click", async () => {
+    const rows = standings();
+    const lines = ["Résultats Chrono Piste", ""];
+    rows.forEach((r, i) => {
+      lines.push(`${i + 1}. ${kLabel(r.kart)} : meilleur tour ${fmtLap(r.best && r.best.ms)} (${r.count} tours)`);
+    });
+    const text = lines.join("\n");
+    try { await navigator.clipboard.writeText(text); toast("Résultats copiés."); }
+    catch { toast("Copie impossible ici. Sélectionne le tableau à la main."); }
+  });
+
+  // ---------- Affichage ----------
+  function render() {
+    const st = S.status;
+    const pill = $("#statusPill");
+    pill.textContent = st === "running" ? "En course" : st === "finished" ? "Terminée" : "Prête";
+    pill.className = "pill " + st;
+    $("#btnStart").disabled = st !== "ready";
+    $("#btnStop").disabled = st !== "running";
+    $("#exampleBanner").hidden = !S.example;
+    tickClock();
+
+    const rows = standings();
+
+    // Passages à identifier
+    const pend = S.passes.filter((p) => !p.kartId || !S.karts.some((k) => k.id === p.kartId)).sort((a, b) => a.t - b.t);
+    $("#pendingCount").textContent = pend.length;
+    $("#pendingCount").classList.toggle("alert", pend.length > 0);
+    $("#pendingEmpty").hidden = pend.length > 0;
+    $("#pendingList").innerHTML = pend.map((p) => {
+      const img = thumbs.get(p.id);
+      return `<li>
+        ${img ? `<img src="${img}" alt="Photo du passage">` : `<div class="noimg">${p.src === "manuel" ? "Manuel" : "Sans photo"}</div>`}
+        <div class="meta">
+          <span class="time">${raceTime(p.t)}</span>
+          <div class="assign">
+            ${S.karts.map((k) => `<button class="chipbtn" type="button" style="${kStyle(k)}" data-pass="${p.id}" data-assign="${k.id}" aria-label="C'est le ${esc(kLabel(k))}">${esc(k.num)}</button>`).join("")}
+            <button class="ignore" type="button" data-pass="${p.id}" data-ignore="1">Ignorer</button>
+          </div>
+        </div>
+      </li>`;
+    }).join("");
+
+    // Boutons manuels
+    const byKart = new Map(rows.map((r) => [r.kart.id, r]));
+    $("#kartButtons").classList.toggle("off", st !== "running");
+    $("#kartButtons").innerHTML = S.karts.map((k) => {
+      const r = byKart.get(k.id);
+      const info = r.passes.length === 0 ? "Pas encore passé" : r.laps.length === 0 ? "Chrono parti" : `Dernier ${fmtLap(r.last.ms)}`;
+      return `<button class="kbtn" type="button" data-kart="${k.id}">
+        <span class="num"><span class="dot" style="background:${esc(k.color)}"></span>${esc(k.num)}</span>
+        <span class="who">${esc(k.name || "Sans nom")}</span>
+        <span class="last">${info}</span>
+      </button>`;
+    }).join("");
+
+    // Gagnant
+    const lead = rows[0];
+    const w = $("#winner");
+    if (lead && lead.best) {
+      const label = st === "finished" ? "Gagnant · meilleur tour" : "En tête · meilleur tour";
+      w.innerHTML = `<div class="badge" style="${kStyle(lead.kart)}">${esc(lead.kart.num)}</div>
+        <div><div class="label">${label}</div><div class="name">${esc(kLabel(lead.kart))}</div><div class="best">${fmtLap(lead.best.ms)} au tour ${lead.best.n}</div></div>`;
+    } else {
+      w.innerHTML = `<div><div class="label">Gagnant</div><div class="name">Pas encore de tour complet</div><div class="hint">Un tour compte quand un kart passe la ligne deux fois.</div></div>`;
+    }
+
+    // Tableau
+    const top = lead && lead.best ? lead.best.ms : null;
+    $("#standings").innerHTML = rows.map((r, i) => `<tr class="${i === 0 && r.best ? "first" : ""}">
+      <td class="pos">${r.best ? i + 1 : "–"}</td>
+      <td><div class="kcell"><span class="ktag" style="${kStyle(r.kart)}">${esc(r.kart.num)}</span><span class="kname">${esc(r.kart.name)}</span></div></td>
+      <td class="t ${i === 0 && r.best ? "best-mark" : ""}">${fmtLap(r.best && r.best.ms)}</td>
+      <td class="t">${r.best && top != null ? (i === 0 ? "—" : "+" + fmtLap(r.best.ms - top)) : ""}</td>
+      <td class="t">${r.count}</td>
+      <td class="t">${fmtLap(r.last && r.last.ms)}</td>
+    </tr>`).join("");
+
+    // Tours par kart
+    $("#laps").innerHTML = rows.map((r) => {
+      if (!r.passes.length) return "";
+      const chips = [`<span class="lap"><span class="n">Départ</span> ${raceTime(r.passes[0].t)}${actions(r.passes[0])}</span>`];
+      for (const l of r.laps) {
+        const cls = l.short ? "short" : r.best && l === r.best ? "best" : "";
+        chips.push(`<span class="lap ${cls}"><span class="n">T${l.n}</span> ${fmtLap(l.ms)}${actions(l.pass)}</span>`);
+      }
+      return `<div class="laprow"><div class="laprow-head"><span class="ktag" style="${kStyle(r.kart)}">${esc(r.kart.num)}</span><span class="kname">${esc(r.kart.name)}</span></div><div class="lapchips">${chips.join("")}</div></div>`;
+    }).join("") || `<p class="empty">Aucun passage pour l'instant.</p>`;
+  }
+  function actions(p) {
+    return `<button type="button" data-act="back" data-pass="${p.id}" aria-label="Renvoyer à identifier" title="Mauvais kart : renvoyer à identifier">↩</button><button type="button" data-act="del" data-pass="${p.id}" aria-label="Effacer ce passage" title="Effacer ce passage">✕</button>`;
+  }
+
+  function tickClock() {
+    const c = $("#clock");
+    if (!S.startedAt) { c.textContent = "0:00"; return; }
+    c.textContent = fmtClock((S.endedAt || nowMs()) - S.startedAt);
+  }
+  setInterval(() => { if (S.status === "running") tickClock(); }, 250);
+
+  // ---------- Réglages ----------
+  function renderSetup() {
+    $("#kartRows").innerHTML = S.karts.map((k) => `<div class="kart-row" data-id="${k.id}">
+      <input type="text" inputmode="numeric" id="num-${k.id}" value="${esc(k.num)}" aria-label="Numéro du kart" data-f="num">
+      <input type="text" id="name-${k.id}" value="${esc(k.name)}" placeholder="Nom du pilote" aria-label="Nom du pilote" data-f="name">
+      <input type="color" id="color-${k.id}" value="${esc(k.color)}" aria-label="Couleur du kart" data-f="color">
+      <button type="button" class="rm" data-rm="${k.id}" aria-label="Retirer le kart ${esc(k.num)}">✕</button>
+    </div>`).join("");
+    $("#setPos").value = S.settings.pos;
+    $("#setSens").value = S.settings.sens;
+    $("#setOrient").value = S.settings.orient;
+    $("#setMinLap").value = S.settings.minLap;
+    $("#setCooldown").value = S.settings.cooldown;
+    $("#setBeep").checked = !!S.settings.beep;
+    placeLine();
+  }
+
+  $("#kartRows").addEventListener("input", (e) => {
+    const row = e.target.closest(".kart-row");
+    const k = row && S.karts.find((x) => x.id === row.dataset.id);
+    if (!k || !e.target.dataset.f) return;
+    k[e.target.dataset.f] = e.target.value;
+    save(); render();
+  });
+  $("#kartRows").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-rm]");
+    if (!b) return;
+    S.karts = S.karts.filter((k) => k.id !== b.dataset.rm);
+    for (const p of S.passes) if (p.kartId === b.dataset.rm) p.kartId = null;
+    save(); render(); renderSetup();
+  });
+  $("#btnAddKart").addEventListener("click", () => {
+    const nums = S.karts.map((k) => parseInt(k.num, 10)).filter((n) => !isNaN(n));
+    S.karts.push({ id: uid(), num: String((nums.length ? Math.max(...nums) : 0) + 1), name: "", color: COLORS[S.karts.length % COLORS.length] });
+    save(); render(); renderSetup();
+  });
+  const bindSetting = (sel, key, parse) => $(sel).addEventListener("input", (e) => {
+    S.settings[key] = parse(e.target);
+    if (key === "pos" || key === "orient") { placeLine(); prev = null; }
+    save(); render();
+  });
+  bindSetting("#setPos", "pos", (t) => Number(t.value));
+  bindSetting("#setSens", "sens", (t) => Number(t.value));
+  bindSetting("#setOrient", "orient", (t) => t.value);
+  bindSetting("#setMinLap", "minLap", (t) => Math.max(0, Number(t.value) || 0));
+  bindSetting("#setCooldown", "cooldown", (t) => Math.min(10, Math.max(0.2, Number(t.value) || 1)));
+  bindSetting("#setBeep", "beep", (t) => t.checked);
+
+  function placeLine() {
+    const l = $("#lineOverlay");
+    const v = S.settings.orient === "v";
+    l.className = "line-overlay " + (v ? "v" : "h");
+    l.style.left = v ? S.settings.pos * 100 + "%" : "";
+    l.style.top = v ? "" : S.settings.pos * 100 + "%";
+    $("#meterThr").style.left = threshold() * 100 + "%";
+  }
+  const threshold = () => 0.32 - S.settings.sens * 0.028; // part des pixels de la ligne qui doivent changer
+
+  // ---------- Caméra ----------
+  const video = $("#video");
+  const work = document.createElement("canvas");
+  const wctx = work.getContext("2d", { willReadFrequently: true });
+  const snap = document.createElement("canvas");
+  let stream = null, prev = null, armed = true, lastTrig = 0, quietSince = 0;
+
+  async function requestWake() {
+    try { if (navigator.wakeLock) await navigator.wakeLock.request("screen"); } catch {}
+  }
+
+  $("#btnCam").addEventListener("click", async () => {
+    if (stream) { stopCam(); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      camMsg("Ce navigateur ne donne pas accès à la caméra ici. Les boutons « Passage manuel » fonctionnent quand même.");
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 60 } },
+      });
+    } catch (err) {
+      stream = null;
+      camMsg("La caméra est bloquée dans cette page. Ouvre l'app depuis son adresse web (voir le README) et accepte l'accès à la caméra. En attendant, utilise les boutons « Passage manuel ».");
+      return;
+    }
+    video.srcObject = stream;
+    try { await video.play(); } catch {}
+    const fps = stream.getVideoTracks()[0].getSettings().frameRate;
+    camMsg(`Caméra active${fps ? ` (${Math.round(fps)} images/s, précision d'environ ${fmtLap(1000 / fps)} s)` : ""}. Règle la ligne sur la ligne d'arrivée et ajuste la sensibilité.`);
+    $("#camEmpty").hidden = true;
+    $("#btnCam").textContent = "Couper la caméra";
+    requestWake();
+    prev = null; armed = true;
+    nextFrame();
+  });
+
+  function stopCam() {
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null; video.srcObject = null;
+    $("#camEmpty").hidden = false;
+    $("#btnCam").textContent = "Activer la caméra";
+    $("#meterBar").style.width = "0";
+  }
+  function camMsg(m) { $("#camMsg").textContent = m; }
+
+  function nextFrame() {
+    if (!stream) return;
+    if ("requestVideoFrameCallback" in HTMLVideoElement.prototype) {
+      video.requestVideoFrameCallback((now, meta) => {
+        let ts = meta && meta.captureTime ? meta.captureTime : now;
+        if (Math.abs(ts - performance.now()) > 1000) ts = now;
+        processFrame(ts); nextFrame();
+      });
+    } else {
+      requestAnimationFrame((now) => { processFrame(now); nextFrame(); });
+    }
+  }
+
+  function processFrame(ts) {
+    const vw = video.videoWidth, vh = video.videoHeight;
+    if (!vw || !vh) return;
+    const W = 160, H = Math.max(2, Math.round((W * vh) / vw));
+    if (work.width !== W || work.height !== H) {
+      work.width = W; work.height = H; prev = null;
+      $("#viewport").style.aspectRatio = `${vw} / ${vh}`;
+    }
+    wctx.drawImage(video, 0, 0, W, H);
+    const band = 4;
+    const vert = S.settings.orient === "v";
+    let x, y, w, h;
+    if (vert) { x = Math.min(W - band, Math.max(0, Math.round(S.settings.pos * W) - band / 2)); y = 0; w = band; h = H; }
+    else { y = Math.min(H - band, Math.max(0, Math.round(S.settings.pos * H) - band / 2)); x = 0; w = W; h = band; }
+    const d = wctx.getImageData(x, y, w, h).data;
+    const n = w * h;
+    const lum = new Uint8Array(n);
+    for (let i = 0; i < n; i++) lum[i] = (d[i * 4] * 77 + d[i * 4 + 1] * 150 + d[i * 4 + 2] * 29) >> 8;
+    if (!prev || prev.length !== n) { prev = lum; return; }
+    let changed = 0;
+    for (let i = 0; i < n; i++) if (Math.abs(lum[i] - prev[i]) > 28) changed++;
+    prev = lum;
+    const score = changed / n;
+    $("#meterBar").style.width = Math.min(100, score * 100) + "%";
+
+    const thr = threshold();
+    const t = performance.now();
+    if (armed) {
+      if (score >= thr) { armed = false; lastTrig = t; quietSince = 0; onCross(ts); }
+    } else if (score < thr * 0.5) {
+      if (!quietSince) quietSince = t;
+      if (t - quietSince > 200 && t - lastTrig >= S.settings.cooldown * 1000) armed = true;
+    } else quietSince = 0;
+  }
+
+  function onCross(ts) {
+    const line = $("#lineOverlay");
+    line.classList.add("hit"); setTimeout(() => line.classList.remove("hit"), 150);
+    if (S.status !== "running") return; // on montre la détection sans l'enregistrer
+    const vw = video.videoWidth, vh = video.videoHeight;
+    snap.width = 320; snap.height = Math.round((320 * vh) / vw);
+    const c = snap.getContext("2d");
+    c.drawImage(video, 0, 0, snap.width, snap.height);
+    c.fillStyle = "rgba(255,116,51,.9)";
+    if (S.settings.orient === "v") c.fillRect(S.settings.pos * snap.width - 1, 0, 2, snap.height);
+    else c.fillRect(0, S.settings.pos * snap.height - 1, snap.width, 2);
+    let img = null;
+    try { img = snap.toDataURL("image/jpeg", 0.65); } catch {}
+    addPass(performance.timeOrigin + ts, null, "cam", img);
+  }
+
+  render();
+  renderSetup();
+})();
+</script>
+
+</body></html>
